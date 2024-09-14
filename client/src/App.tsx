@@ -1,94 +1,43 @@
-import React, { useState } from 'react';
+import React from 'react';
+import ImageUploader from './components/ImageUploader';
+import ImageProcessor from './components/ImageProcessor';
+import { WebSocketProvider } from './contexts/WebSocketContext';
+import { useFileContext } from './contexts/FileContext'; // Adjust import path
+import bg_image from './images/bg_image.png'
 
 const App: React.FC = () => {
-  const [image, setImage] = useState<File | null>(null);
-  const [preview, setPreview] = useState<string | null>(null);
-  const [brightness, setBrightness] = useState<number>(1);
-  const [saturation, setSaturation] = useState<number>(1);
-  const [contrast, setContrast] = useState<number>(1);
-  const [rotation, setRotation] = useState<number>(0);
-
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files ? e.target.files[0] : null;
-    setImage(file);
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        setPreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleSubmit = async () => {
-    // Make API call here to send image and settings to the backend
-  };
-
+  const { filePath } = useFileContext();
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-      <div className="p-4 bg-white shadow-md rounded-md">
-        <h1 className="text-2xl font-bold mb-4">Image Processor</h1>
-        <input type="file" accept="image/*" onChange={handleImageChange} className="mb-4" />
+    <WebSocketProvider>
+      <div className="overflow-hidden">
+        <div className='flex flex-col justify-center items-center px-4 py-6 h-screen w-screen  relative'>
+          <div className="absolute top-0 left-0 h-full w-full bg-gradient-to-b from-sky-100 to-blue-200 z-[-1]">
+            <img
+              src={bg_image}
+              alt="img_bg"
+              className='mix-blend-multiply object-cover'
+            />
+          </div>
+          {
+            filePath ?
+              <ImageProcessor />
+              :
+              <ImageUploader />
+          }
 
-        {preview && <img src={preview} alt="Preview" className="mb-4 max-w-sm" />}
-
-        <div className="mb-4">
-          <label className="block font-medium mb-2">Brightness</label>
-          <input
-            type="range"
-            min="0"
-            max="2"
-            step="0.1"
-            value={brightness}
-            onChange={(e) => setBrightness(parseFloat(e.target.value))}
-            className="w-full"
-          />
+          {/* footer */}
+          <div className='bg-blue-600 w-screen fixed bottom-0 px-4 py-2'>
+            <p className='text-white text-sm tracking-wider font-[500] text-center'>
+              Copyright @ 2024 | Designed and Developed By 
+              {" "}
+              <a href='https://www.linkedin.com/in/shubh-vaish-226493220/' target='_blank' rel="noreferrer" className='underline'>
+                Shubh
+              </a>
+            </p>
+          </div>
         </div>
-
-        <div className="mb-4">
-          <label className="block font-medium mb-2">Contrast</label>
-          <input
-            type="range"
-            min="0"
-            max="2"
-            step="0.1"
-            value={contrast}
-            onChange={(e) => setContrast(parseFloat(e.target.value))}
-            className="w-full"
-          />
-        </div>
-
-        <div className="mb-4">
-          <label className="block font-medium mb-2">Saturation</label>
-          <input
-            type="range"
-            min="0"
-            max="2"
-            step="0.1"
-            value={saturation}
-            onChange={(e) => setSaturation(parseFloat(e.target.value))}
-            className="w-full"
-          />
-        </div>
-
-        <div className="mb-4">
-          <label className="block font-medium mb-2">Rotation</label>
-          <input
-            type="number"
-            value={rotation}
-            onChange={(e) => setRotation(parseInt(e.target.value))}
-            className="w-full"
-          />
-        </div>
-
-        <button
-          onClick={handleSubmit}
-          className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
-        >
-          Process Image
-        </button>
       </div>
-    </div>
+    </WebSocketProvider>
   );
 };
 

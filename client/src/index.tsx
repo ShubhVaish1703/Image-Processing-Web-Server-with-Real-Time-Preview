@@ -1,13 +1,12 @@
 import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';
+import ReactDOM from 'react-dom';
 import App from './App';
+import { FileProvider } from './contexts/FileContext'; // Adjust import path
+import './index.css'
 
-const root = ReactDOM.createRoot(
-  document.getElementById('root') as HTMLElement
-);
-root.render(
-  <React.StrictMode>
+ReactDOM.render(
+  <FileProvider>
     <App />
-  </React.StrictMode>
+  </FileProvider>,
+  document.getElementById('root')
 );
